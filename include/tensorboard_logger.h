@@ -38,6 +38,13 @@ class TensorBoardLogger {
                   const std::string &encoded_image, int height, int width,
                   int channel, const std::string &display_name = "",
                   const std::string &description = "");
+    int add_images(const std::string &tag, int step,
+                   const std::vector<std::string> &encoded_images,
+                   const std::vector<int> &heights,
+                   const std::vector<int> &widths,
+                   const std::vector<int> &channels,
+                   const std::vector<std::string> &display_names,
+                   const std::vector<std::string> &descriptions);
     int add_audio(const std::string &tag, int step,
                   const std::string &encoded_audio, float sample_rate,
                   int num_channels, int length_frame,
@@ -50,6 +57,11 @@ class TensorBoardLogger {
     int generate_default_buckets();
     int add_event(int64_t step, Summary *summary);
     int write(Event &event);
+    int create_image_summary(const std::string &tag,
+                             const std::string &encoded_image, int height,
+                             int width, int channel,
+                             const std::string &display_name,
+                             const std::string &description, Summary::Value *v);
 
     std::ofstream *ofs_;
     std::vector<double> *bucket_limits_;

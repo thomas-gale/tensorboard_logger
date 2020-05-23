@@ -100,11 +100,12 @@ int TensorBoardLogger::add_scalar(const string &tag, int step, float value) {
     return add_event(step, summary);
 }
 
-int TensorBoardLogger::add_image(const string &tag, int step,
-                                 const string &encoded_image, int height,
-                                 int width, int channel,
-                                 const string &display_name,
-                                 const string &description) {
+int TensorBoardLogger::create_image_summary(const string &tag,
+                                            const string &encoded_image,
+                                            int height, int width, int channel,
+                                            const string &display_name,
+                                            const string &description,
+                                            Summary::Value *v) {
     auto *meta = new SummaryMetadata();
     meta->set_display_name(display_name == "" ? tag : display_name);
     meta->set_summary_description(description);
@@ -115,11 +116,44 @@ int TensorBoardLogger::add_image(const string &tag, int step,
     image->set_colorspace(channel);
     image->set_encoded_image_string(encoded_image);
 
-    auto *summary = new Summary();
-    auto *v = summary->add_value();
     v->set_tag(tag);
     v->set_allocated_image(image);
     v->set_allocated_metadata(meta);
+    return 0;
+}
+
+int TensorBoardLogger::add_image(const string &tag, int step,
+                                 const string &encoded_image, int height,
+                                 int width, int channel,
+                                 const string &display_name,
+                                 const string &description) {
+    auto *summary = new Summary();
+    auto *v = summary->add_value();
+    create_image_summary(tag, encoded_image, height, width, channel,
+                         display_name, description, v);
+
+    return add_event(step, summary);
+}
+
+int TensorBoardLogger::add_images(const string &tag, int step,
+                                  const vector<string> &encoded_images,
+                                  const vector<int> &heights,
+                                  const vector<int> &widths,
+                                  const vector<int> &channels,
+                                  const vector<string> &display_names,
+                                  const vector<string> &descriptions) {
+    auto *summary = new Summary();
+    assert(encoded_images.size() == heights.size());
+    assert(encoded_images.size() == widths.size());
+    assert(encoded_images.size() == channels.size());
+    assert(encoded_images.size() == display_names.size());
+    assert(encoded_images.size() == descriptions.size());
+
+    for (size_t i = 0; i < encoded_images.size(); ++i) {
+        auto *v = summary->add_value();
+        create_image_summary(tag, encoded_images[i], heights[i], widths[i],
+                             channels[i], display_names[i], descriptions[i], v);
+    }
     return add_event(step, summary);
 }
 

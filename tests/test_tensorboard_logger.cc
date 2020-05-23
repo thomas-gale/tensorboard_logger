@@ -35,6 +35,16 @@ int test_log(const char* log_file) {
         "Lenna or Lena is the name given to a standard test image widely used "
         "in the field of image processing since 1973.");
 
+    // test add multiple images
+    fin.open("./assets/audio.jpg", ios::binary);
+    ss << fin.rdbuf();
+    string image2(ss.str());
+    ss.str("");
+    fin.close();
+    logger.add_images("Multiple Images Sample", 2, {image, image2}, {512, 1472},
+                      {512, 640}, {3, 3}, {"Lena Forsén", "TensorBoard"},
+                      {"Lenna", "Audio"});
+
     // test add audio
     fin.open("./assets/file_example_WAV_1MG.wav", ios::binary);
     ss << fin.rdbuf();
