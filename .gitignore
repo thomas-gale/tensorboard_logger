@@ -6,3 +6,6 @@
 test
 demo
 .vscode/
+
+# CMake
+build/
