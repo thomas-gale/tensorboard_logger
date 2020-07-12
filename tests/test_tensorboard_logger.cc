@@ -1,4 +1,5 @@
 #include <fstream>
+#include <experimental/filesystem>
 #include <iostream>
 #include <random>
 #include <sstream>
@@ -24,7 +25,7 @@ int test_log(const char* log_file) {
     }
 
     // test add image
-    ifstream fin("./assets/Lenna_(test_image).png", ios::binary);
+    ifstream fin("../assets/Lenna_(test_image).png", ios::binary);
     ostringstream ss;
 
     ss << fin.rdbuf();
@@ -86,7 +87,7 @@ int test_log(const char* log_file) {
     vec_file.close();
 
     vector<string> meta;
-    ifstream meta_file("assets/meta.tsv");
+    ifstream meta_file("../assets/meta.tsv");
     while (getline(meta_file, line)) {
         meta.push_back(line);
     }
@@ -114,6 +115,7 @@ int test_log(const char* log_file) {
 int main(int argc, char* argv[]) {
     GOOGLE_PROTOBUF_VERIFY_VERSION;
 
+    std::experimental::filesystem::create_directory("demo");
     int ret = test_log("demo/tfevents.pb");
     assert(ret == 0);
 
