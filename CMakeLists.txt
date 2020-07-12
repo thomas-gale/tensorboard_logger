@@ -5,8 +5,7 @@ project(TensordboardLogger
     DESCRIPTION "C++ API to log data in tensorboard format"
     LANGUAGES CXX)
 
-# Currently passing ${TENSOR_LOG_DIR} absolute path flag.
-# Switch ${TENSOR_LOG_DIR} to ${PROJECT_SOURCE_DIR} ??
+set (CMAKE_CXX_STANDARD 17)
 
 # Define proto directory and proto files.
 set(PROTOBUF_DIRECTORY ${PROJECT_SOURCE_DIR}/proto)
@@ -31,26 +30,35 @@ add_library(tensorboard_logger
     ${HEADER_LIST}
     ${SRC_LIST})
 
-find_library(protobuf REQUIRED)
+# Locate protobuffer library (Built and located in /usr/lib/... during Docker environemnt setup)
+include(FindProtobuf)
+find_package(Protobuf REQUIRED)
 
 target_include_directories(tensorboard_logger
     PUBLIC 
-    ${PROJECT_SOURCE_DIR}/include
-    ${PROTOBUF_include})
+    ${PROJECT_SOURCE_DIR}/include)
 
 target_link_libraries(tensorboard_logger 
     PUBLIC
-    protobuf)
+    ${PROTOBUF_LIBRARY}
+    stdc++fs)
 
 # All users of this library will need at least C++11
 #target_compile_features(tensorboard_logger PUBLIC cxx_std_11)
 #target_compile_features(tensorboard_logger PRIVATE -Wall)
 
 # Define Test Library
-add_executable(tensorboard_logger_tests
-    ${HEADER_LIST}
-    tests/test_tensorboard_logger.cc)
+#add_executable(tensorboard_logger_tests
+#    ${HEADER_LIST}
+#    tests/test_tensorboard_logger.cc)
 
-target_link_libraries(tensorboard_logger_tests 
-    PRIVATE
-    tensorboard_logger)
+#target_include_directories(tensorboard_logger_tests
+#    PRIVATE 
+#    ${PROJECT_SOURCE_DIR}/include)
+
+#target_link_libraries(tensorboard_logger_tests 
+#    PRIVATE
+#    tensorboard_logger)
+
+# Copy test assets
+
