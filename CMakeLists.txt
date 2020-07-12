@@ -8,7 +8,7 @@ project(TensordboardLogger
 set (CMAKE_CXX_STANDARD 17)
 
 # Define proto directory and proto files.
-set(PROTOBUF_DIRECTORY ${PROJECT_SOURCE_DIR}/proto)
+set(PROTOBUF_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/proto)
 file(GLOB PROTOBUF_DEFINITION_FILES ${PROTOBUF_DIRECTORY}/*.proto)
 
 # Run protoc
@@ -19,20 +19,20 @@ file(GLOB PROTOBUF_GEN_HEADERS ${PROTOBUF_DIRECTORY}/*.h)
 file(GLOB PROTOBUF_GEN_SRC ${PROTOBUF_DIRECTORY}/*.cc)
 
 # Move files
-execute_process(COMMAND mv ${PROTOBUF_GEN_HEADERS} ${PROJECT_SOURCE_DIR}/include)
-execute_process(COMMAND mv ${PROTOBUF_GEN_SRC} ${PROJECT_SOURCE_DIR}/src)
+execute_process(COMMAND mv ${PROTOBUF_GEN_HEADERS} ${CMAKE_CURRENT_SOURCE_DIR}/include)
+execute_process(COMMAND mv ${PROTOBUF_GEN_SRC} ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 # Define library 
-file(GLOB HEADER_LIST ${PROJECT_SOURCE_DIR}/include/*.h)
-file(GLOB SRC_LIST ${PROJECT_SOURCE_DIR}/src/*.cc)
-
-add_library(tensorboard_logger
-    ${HEADER_LIST}
-    ${SRC_LIST})
+file(GLOB HEADER_LIST ${CMAKE_CURRENT_SOURCE_DIR}/include/*.h)
+file(GLOB SRC_LIST ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cc)
 
 # Locate protobuffer library (Built and located in /usr/lib/... during Docker environemnt setup)
 include(FindProtobuf)
 find_package(Protobuf REQUIRED)
+
+add_library(tensorboard_logger
+    ${HEADER_LIST}
+    ${SRC_LIST})
 
 target_include_directories(tensorboard_logger
     PUBLIC 
@@ -40,7 +40,7 @@ target_include_directories(tensorboard_logger
 
 target_link_libraries(tensorboard_logger 
     PUBLIC
-    ${PROTOBUF_LIBRARY}
+    ${PROTOBUF_LIBRARIES}
     stdc++fs)
 
 # All users of this library will need at least C++11
@@ -48,17 +48,17 @@ target_link_libraries(tensorboard_logger
 #target_compile_features(tensorboard_logger PRIVATE -Wall)
 
 # Define Test Library
-#add_executable(tensorboard_logger_tests
-#    ${HEADER_LIST}
-#    tests/test_tensorboard_logger.cc)
+add_executable(tensorboard_logger_tests
+    ${HEADER_LIST}
+    tests/test_tensorboard_logger.cc)
 
-#target_include_directories(tensorboard_logger_tests
-#    PRIVATE 
-#    ${PROJECT_SOURCE_DIR}/include)
+target_include_directories(tensorboard_logger_tests
+    PRIVATE 
+    ${PROJECT_SOURCE_DIR}/include)
 
-#target_link_libraries(tensorboard_logger_tests 
-#    PRIVATE
-#    tensorboard_logger)
+target_link_libraries(tensorboard_logger_tests 
+    PRIVATE
+    tensorboard_logger)
 
 # Copy test assets
 
