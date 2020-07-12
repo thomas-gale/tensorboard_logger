@@ -29,6 +29,7 @@ file(GLOB SRC_LIST ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cc)
 # Locate protobuffer library (Built and located in /usr/lib/... during Docker environemnt setup)
 include(FindProtobuf)
 find_package(Protobuf REQUIRED)
+message(STATUS "Using protobuf version: ${Protobuf_VERSION}")
 
 add_library(tensorboard_logger
     ${HEADER_LIST}
@@ -40,7 +41,7 @@ target_include_directories(tensorboard_logger
 
 target_link_libraries(tensorboard_logger 
     PUBLIC
-    ${PROTOBUF_LIBRARIES}
+    ${Protobuf_LIBRARIES}
     stdc++fs)
 
 # All users of this library will need at least C++11
